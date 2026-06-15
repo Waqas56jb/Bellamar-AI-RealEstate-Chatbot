@@ -31,6 +31,7 @@
   var appUrl = (thisScript && thisScript.getAttribute('data-app-url')) || origin
   var side = (thisScript && thisScript.getAttribute('data-position')) || 'right'
   var frameSrc = appUrl.replace(/\/$/, '') + '/?embed=1'
+  var logoUrl = appUrl.replace(/\/$/, '') + '/logo.png'
   var SIDE = side === 'left' ? 'left' : 'right'
 
   // ---- Styles ---------------------------------------------------------------
@@ -43,6 +44,7 @@
     'transition:transform .2s ease,box-shadow .2s ease;animation:bm-pop .4s ease}' +
     '#bellamar-launcher:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 14px 36px rgba(8,24,32,.55)}' +
     '#bellamar-launcher svg{width:28px;height:28px}' +
+    '#bellamar-launcher img{width:32px;height:32px;object-fit:contain;display:block}' +
     '#bellamar-launcher .bm-ring{position:absolute;inset:0;border-radius:50%;border:2px solid #c9a45f;' +
     'opacity:.6;animation:bm-pulse 2.2s ease-out infinite}' +
     '#bellamar-launcher .bm-dot{position:absolute;top:6px;' + (SIDE === 'left' ? 'left' : 'right') + ':6px;' +
@@ -75,11 +77,7 @@
   launcher.innerHTML =
     '<span class="bm-ring"></span>' +
     '<span class="bm-dot"></span>' +
-    '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
-    '<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8A2.5 2.5 0 0 1 17.5 16H9l-4 4v-4H6.5' +
-    'A2.5 2.5 0 0 1 4 13.5v-8Z" fill="#c9a45f"/>' +
-    '<circle cx="9" cy="9.5" r="1.1" fill="#0c2733"/><circle cx="12" cy="9.5" r="1.1" fill="#0c2733"/>' +
-    '<circle cx="15" cy="9.5" r="1.1" fill="#0c2733"/></svg>'
+    '<img src="' + logoUrl + '" alt="Bellamar" />'
 
   var frameWrap = document.createElement('div')
   frameWrap.id = 'bellamar-frame-wrap'

@@ -31,7 +31,7 @@ export default function ChatScreen({ t, messages, isTyping, onPickQuick, onSend 
           if (m.type === 'quick') {
             return <QuickReplies key={m.id} items={t.quickReplies} onPick={onPickQuick} />
           }
-          return <MessageBubble key={m.id} from={m.from} text={m.text} />
+          return <MessageBubble key={m.id} from={m.from} text={m.text} streaming={m.streaming} />
         })}
         {isTyping && <TypingIndicator />}
       </div>

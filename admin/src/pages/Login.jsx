@@ -25,7 +25,7 @@ export default function Login({ onLoggedIn }) {
   return (
     <div className="login">
       <form className="login__card" onSubmit={submit}>
-        <div className="login__logo">B</div>
+        <div className="login__logo"><img src="/logo.png" alt="Bellamar" /></div>
         <h1 className="login__title">Bellamar Admin</h1>
         <p className="login__subtitle">
           <ShieldCheck size={14} /> Secure chatbot control panel

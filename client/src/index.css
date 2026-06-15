@@ -85,6 +85,7 @@ body.embed { background: transparent; }
 }
 .cw-launcher:hover { transform: translateY(-2px); }
 .cw-launcher__icon { font-size: 18px; }
+.cw-launcher__img { width: 26px; height: 26px; object-fit: contain; display: block; }
 
 /* ---- Panel ------------------------------------------------------------- */
 .cw-panel {
@@ -131,11 +132,8 @@ body.embed { background: transparent; }
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--serif);
-  font-weight: 700;
-  font-size: 20px;
-  color: var(--gold);
 }
+.cw-logo__img { width: 74%; height: 74%; object-fit: contain; display: block; }
 .cw-logo__status {
   position: absolute;
   right: -1px;
@@ -285,12 +283,9 @@ body.embed { background: transparent; }
   width: 66px; height: 66px;
   border-radius: 50%;
   background: var(--sea-900);
-  color: var(--gold);
   display: flex; align-items: center; justify-content: center;
-  font-family: var(--serif);
-  font-size: 30px;
-  font-weight: 700;
 }
+.welcome__logo img { width: 72%; height: 72%; object-fit: contain; display: block; }
 .welcome__title {
   font-family: var(--serif);
   font-size: 26px;
@@ -348,13 +343,11 @@ body.embed { background: transparent; }
   width: 30px; height: 30px;
   border-radius: 50%;
   background: var(--sea-900);
-  color: var(--gold);
   display: flex; align-items: center; justify-content: center;
-  font-family: var(--serif);
-  font-weight: 700;
-  font-size: 14px;
   border: 1.5px solid var(--gold);
+  overflow: hidden;
 }
+.msg-avatar img { width: 76%; height: 76%; object-fit: contain; display: block; }
 .msg-bubble {
   max-width: 78%;
   padding: 12px 15px;
@@ -380,24 +373,38 @@ body.embed { background: transparent; }
 }
 
 /* markdown content inside bot bubbles */
-.md { font-size: 14px; line-height: 1.55; }
+.md { font-size: 14.5px; line-height: 1.6; letter-spacing: 0.05px; }
 .md > :first-child { margin-top: 0; }
 .md > :last-child { margin-bottom: 0; }
-.md p { margin: 0 0 8px; }
+.md p { margin: 0 0 9px; }
 .md strong { font-weight: 700; color: var(--sea-900); }
-.md em { font-style: italic; }
+.md em { font-style: italic; color: var(--ink-soft); }
 .md h1, .md h2, .md h3, .md h4 {
   font-family: var(--serif);
   color: var(--sea-900);
-  margin: 10px 0 6px;
+  font-weight: 700;
+  margin: 12px 0 7px;
   line-height: 1.2;
+  letter-spacing: 0.2px;
 }
-.md h1 { font-size: 18px; }
-.md h2 { font-size: 17px; }
-.md h3, .md h4 { font-size: 15.5px; }
-.md ul, .md ol { margin: 6px 0 10px; padding-left: 18px; }
-.md li { margin: 3px 0; }
-.md ul li::marker { color: var(--gold); }
+.md h1 { font-size: 19px; }
+.md h2 { font-size: 17.5px; }
+.md h3, .md h4 { font-size: 16px; }
+.md ul, .md ol { margin: 7px 0 11px; padding-left: 6px; list-style: none; }
+.md ol { padding-left: 18px; list-style: decimal; }
+.md li { margin: 6px 0; padding-left: 18px; position: relative; }
+.md ul > li::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 9px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+.md ol > li { padding-left: 4px; }
+.md ol > li::marker { color: var(--gold); font-weight: 700; }
 .md a { color: var(--sea-700); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
 .md a:hover { color: var(--gold); }
 .md code {
@@ -407,13 +414,23 @@ body.embed { background: transparent; }
   font-size: 12.5px;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
-.md hr { border: none; border-top: 1px solid rgba(31, 90, 112, 0.15); margin: 10px 0; }
+.md hr { display: none; } /* guard against stray --- rules */
 .md blockquote {
   margin: 8px 0;
   padding: 4px 12px;
   border-left: 3px solid var(--gold);
   color: var(--ink-soft);
 }
+
+/* blinking cursor while the reply streams in */
+.md--streaming > :last-child::after {
+  content: '▍';
+  display: inline-block;
+  margin-left: 2px;
+  color: var(--gold);
+  animation: cursor-blink 1s steps(2, start) infinite;
+}
+@keyframes cursor-blink { to { visibility: hidden; } }
 
 /* typing dots */
 .msg-bubble.typing { display: inline-flex; gap: 5px; align-items: center; padding: 14px 16px; }

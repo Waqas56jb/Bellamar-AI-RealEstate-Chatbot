@@ -11,7 +11,8 @@ assertConfig() // throws early if required env vars are missing
 const app = express()
 
 // Widget (client) + admin panel call this API from other origins.
-app.use(cors())
+// Expose the conversation-id header so the streaming client can read it.
+app.use(cors({ exposedHeaders: ['X-Conversation-Id'] }))
 app.use(express.json({ limit: '1mb' }))
 
 app.get('/api/health', (_req, res) => {

@@ -28,7 +28,7 @@ export default function Header({ t, lang, onChangeLang, onClose }) {
     <header className="cw-header">
       <div className="cw-header__brand">
         <div className="cw-logo">
-          B
+          <img src="/logo.png" alt="Bellamar" className="cw-logo__img" />
           <span className="cw-logo__status" aria-hidden="true" />
         </div>
         <div className="cw-header__titles">

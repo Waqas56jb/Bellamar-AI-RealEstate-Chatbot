@@ -57,18 +57,39 @@ export default function ChatWidget({ embedded = false, onRequestClose }) {
     return h
   }
 
-  // ----- Real AI reply -----------------------------------------------------
+  // ----- Real AI reply (streamed token-by-token) ---------------------------
   const sendToAI = async (userText) => {
     const history = historyFrom(messages, userText)
+    const botId = nextId()
     setIsTyping(true)
+    let placed = false
+
     try {
-      const data = await api.chat({ messages: history, language: lang, conversationId })
-      setIsTyping(false)
-      if (data.conversationId) setConversationId(data.conversationId)
-      pushBot(data.disabled ? data.reply || t.offlineMessage : data.reply || t.answers.fallback)
+      const { reply, conversationId: cid } = await api.chatStream({
+        messages: history,
+        language: lang,
+        conversationId,
+        onToken: (full) => {
+          if (!placed) {
+            placed = true
+            setIsTyping(false)
+            // Drop in the bot bubble on the first token, then keep updating it.
+            setMessages((p) => [...p, { id: botId, type: 'text', from: 'bot', text: full, streaming: true }])
+          } else {
+            setMessages((p) => p.map((m) => (m.id === botId ? { ...m, text: full } : m)))
+          }
+        },
+      })
+      if (cid) setConversationId(cid)
+      // Finalize: stop the streaming cursor; ensure full text is set.
+      setMessages((p) =>
+        p.map((m) => (m.id === botId ? { ...m, text: reply || m.text, streaming: false } : m)),
+      )
+      if (!placed && !reply) pushBot(t.answers.fallback)
     } catch (e) {
       setIsTyping(false)
-      pushBot(t.errorMessage)
+      if (placed) setMessages((p) => p.map((m) => (m.id === botId ? { ...m, streaming: false } : m)))
+      else pushBot(t.errorMessage)
     }
   }
 
@@ -160,7 +181,7 @@ export default function ChatWidget({ embedded = false, onRequestClose }) {
         onClick={() => setIsOpen(true)}
         aria-label="Open chat"
       >
-        <span className="cw-launcher__icon">💬</span>
+        <img src="/logo.png" alt="" className="cw-launcher__img" />
         <span className="cw-launcher__label">{t.role}</span>
       </button>
     )

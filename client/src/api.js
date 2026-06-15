@@ -20,6 +20,31 @@ export const api = {
   chat: ({ messages, language, conversationId }) =>
     post('/api/chat', { messages, language, conversationId }),
 
+  // Streaming chat: calls onToken(fullTextSoFar) as tokens arrive.
+  // Returns { reply, conversationId }.
+  chatStream: async ({ messages, language, conversationId, onToken }) => {
+    const res = await fetch(`${BASE}/api/chat/stream`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages, language, conversationId }),
+    })
+    if (!res.ok || !res.body) {
+      const data = await res.json().catch(() => ({}))
+      throw new Error(data.error || `Stream failed (${res.status})`)
+    }
+    const convId = res.headers.get('X-Conversation-Id') || conversationId || null
+    const reader = res.body.getReader()
+    const decoder = new TextDecoder()
+    let full = ''
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+      full += decoder.decode(value, { stream: true })
+      onToken?.(full)
+    }
+    return { reply: full.trim(), conversationId: convId }
+  },
+
   // Save a captured lead -> { ok, lead }
   sendLead: (lead) => post('/api/leads', lead),
 

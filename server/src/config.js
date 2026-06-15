@@ -13,6 +13,11 @@ export const config = {
   adminPassword: process.env.ADMIN_PASSWORD,
   adminTokenSecret: process.env.ADMIN_TOKEN_SECRET || 'dev-insecure-secret',
 
+  // Email notifications for new leads (optional — via Resend)
+  resendApiKey: process.env.RESEND_API_KEY,
+  leadNotifyTo: process.env.LEAD_NOTIFY_TO,
+  leadNotifyFrom: process.env.LEAD_NOTIFY_FROM || 'Bellamar Assistant <onboarding@resend.dev>',
+
   // Server
   port: 3001,
 

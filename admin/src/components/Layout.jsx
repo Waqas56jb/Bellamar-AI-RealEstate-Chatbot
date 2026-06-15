@@ -32,7 +32,7 @@ export default function Layout({ page, onNavigate, onLogout, children }) {
       <aside className={`sidebar ${mobileOpen ? 'is-open' : ''}`}>
         <div className="sidebar__top">
           <div className="sidebar__brand">
-            <div className="sidebar__logo">B</div>
+            <div className="sidebar__logo"><img src="/logo.png" alt="Bellamar" /></div>
             <div>
               <div className="sidebar__name">Bellamar</div>
               <div className="sidebar__sub">Chatbot Admin</div>
