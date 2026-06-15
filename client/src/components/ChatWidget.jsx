@@ -12,7 +12,7 @@ const nextId = () => `m${++msgId}`
 //
 // NOTE: bot replies are mocked locally (canned answers + simulated typing) so
 // the frontend is fully demonstrable. Swap `botReply` for a backend/AI call later.
-export default function ChatWidget() {
+export default function ChatWidget({ embedded = false, onRequestClose }) {
   const [isOpen, setIsOpen] = useState(true)
   const [started, setStarted] = useState(false)
   const [lang, setLang] = useState('en')
@@ -73,7 +73,15 @@ export default function ChatWidget() {
     }
   }
 
-  if (!isOpen) {
+  // Closing: embedded mode tells the host page to hide the iframe; standalone
+  // mode just collapses back to the launcher bubble.
+  const handleClose = () => {
+    if (embedded) onRequestClose?.()
+    else setIsOpen(false)
+  }
+
+  // In embedded mode the host page draws the launcher, so the panel is always shown.
+  if (!embedded && !isOpen) {
     return (
       <button
         type="button"
@@ -88,8 +96,8 @@ export default function ChatWidget() {
   }
 
   return (
-    <div className="cw-panel" role="dialog" aria-label={t.brand}>
-      <Header t={t} lang={lang} onChangeLang={changeLang} onClose={() => setIsOpen(false)} />
+    <div className={`cw-panel ${embedded ? 'cw-panel--embed' : ''}`} role="dialog" aria-label={t.brand}>
+      <Header t={t} lang={lang} onChangeLang={changeLang} onClose={handleClose} />
 
       <div className="cw-body">
         {!started ? (

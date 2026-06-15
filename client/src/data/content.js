@@ -46,17 +46,47 @@ export const I18N = {
       { id: 'contact', icon: '📞', text: 'Contact & Viewing' },
     ],
     answers: {
-      sales:
-        'We currently offer exclusive apartments for sale in Marina, Dalmatia (30 min. from Split) — including the Skyline Penthouse Marina, a modern one-bedroom apartment, and several sea-view residences with private parking and storage. Would you like details on a specific home, or shall I arrange a viewing?',
-      rentals:
-        'Our rental portfolio is being prepared and will be available very soon. If you tell me what you are looking for (dates, size, budget), I can note your interest and our team will contact you as soon as listings go live.',
-      projects:
-        'Our signature projects on the Dalmatian coast include Marina Residence (sea-view apartments), Villa Marina (duplex villa with private pool) and Villa Bellamar (modern hillside villa). Which project would you like to know more about?',
-      contact:
-        'You can reach Bellamar in Split, Croatia at +385 95 374 4906 or executive@bellamarinvest.com. Share your name, email and what you are interested in, and our team will get back to you shortly.',
-      lead: "Great — I'd love to connect you with our team. Could you share your name, email, and what you're interested in?",
-      fallback:
-        "Thanks for your message! I can help with properties for sale, rentals, our projects, or putting you in touch with our team in Split. What would you like to explore?",
+      sales: `**Properties for Sale** 🏠
+
+Exclusive apartments in **Marina, Dalmatia** _(30 min from Split)_:
+
+- **Skyline Penthouse Marina** — duplex · 4 bed · panoramic sea views
+- **Modern 1-Bedroom Apartment** — best value · move-in ready
+- **Sea-view residences** — private parking & storage
+
+Want details on one, or shall I arrange a **viewing**?`,
+      rentals: `**Rentals** 🔑
+
+Our rental portfolio is **coming soon**.
+
+Tell me what you're looking for — dates, size, budget — and I'll note your interest. Our team will reach out the moment listings go live.`,
+      projects: `**Our Projects** 🏗️
+
+On the Dalmatian coast:
+
+- **Marina Residence** — sea-view apartments
+- **Villa Marina** — duplex villa with private pool
+- **Villa Bellamar** — modern hillside villa
+
+Which one would you like to explore?`,
+      contact: `**Contact Bellamar** 📞
+
+- 📍 Split, Croatia
+- 📱 +385 95 374 4906
+- ✉️ executive@bellamarinvest.com
+
+Leave your **name & email** below and our team will get back to you shortly.`,
+      lead: `I'd be glad to connect you with our team.
+
+Please share your **name**, **email**, and what you're interested in.`,
+      fallback: `I can help you with:
+
+- 🏠 **Properties for sale**
+- 🔑 **Rentals**
+- 🏗️ **Our projects**
+- 📞 **Contacting our team**
+
+What would you like to explore?`,
     },
     leadPrompt: 'Leave your details and we will get back to you',
     leadName: 'Your name',
@@ -87,17 +117,47 @@ export const I18N = {
       { id: 'contact', icon: '📞', text: 'Contact & bezichtiging' },
     ],
     answers: {
-      sales:
-        'Wij bieden momenteel exclusieve appartementen te koop aan in Marina, Dalmatië (30 min. van Split) — waaronder de Skyline Penthouse Marina, een modern appartement met één slaapkamer en diverse residenties met zeezicht, eigen parkeerplaats en berging. Wilt u details over een specifieke woning, of zal ik een bezichtiging regelen?',
-      rentals:
-        'Onze huurportefeuille wordt voorbereid en is binnenkort beschikbaar. Vertel mij waar u naar op zoek bent (data, grootte, budget) en ik noteer uw interesse; ons team neemt contact met u op zodra de woningen online staan.',
-      projects:
-        'Onze kenmerkende projecten aan de Dalmatische kust zijn Marina Residence (appartementen met zeezicht), Villa Marina (duplexvilla met privézwembad) en Villa Bellamar (moderne villa op een heuvel). Over welk project wilt u meer weten?',
-      contact:
-        'U kunt Bellamar in Split, Kroatië bereiken op +385 95 374 4906 of executive@bellamarinvest.com. Deel uw naam, e-mail en interesse, dan neemt ons team spoedig contact met u op.',
-      lead: 'Graag breng ik u in contact met ons team. Kunt u uw naam, e-mail en interesse delen?',
-      fallback:
-        'Bedankt voor uw bericht! Ik kan u helpen met woningen te koop, huurwoningen, onze projecten of contact met ons team in Split. Wat wilt u verkennen?',
+      sales: `**Woningen te koop** 🏠
+
+Exclusieve appartementen in **Marina, Dalmatië** _(30 min. van Split)_:
+
+- **Skyline Penthouse Marina** — duplex · 4 slaapkamers · zeezicht
+- **Modern 1-slaapkamerappartement** — beste prijs · instapklaar
+- **Residenties met zeezicht** — eigen parkeerplaats & berging
+
+Wilt u details over één woning, of zal ik een **bezichtiging** regelen?`,
+      rentals: `**Huurwoningen** 🔑
+
+Onze huurportefeuille komt **binnenkort** beschikbaar.
+
+Vertel me wat u zoekt — data, grootte, budget — en ik noteer uw interesse. Ons team neemt contact op zodra de woningen online staan.`,
+      projects: `**Onze projecten** 🏗️
+
+Aan de Dalmatische kust:
+
+- **Marina Residence** — appartementen met zeezicht
+- **Villa Marina** — duplexvilla met privézwembad
+- **Villa Bellamar** — moderne villa op een heuvel
+
+Welk project wilt u verkennen?`,
+      contact: `**Contact Bellamar** 📞
+
+- 📍 Split, Kroatië
+- 📱 +385 95 374 4906
+- ✉️ executive@bellamarinvest.com
+
+Laat hieronder uw **naam & e-mail** achter, dan neemt ons team spoedig contact op.`,
+      lead: `Ik breng u graag in contact met ons team.
+
+Deel uw **naam**, **e-mail** en waar u in geïnteresseerd bent.`,
+      fallback: `Ik kan u helpen met:
+
+- 🏠 **Woningen te koop**
+- 🔑 **Huurwoningen**
+- 🏗️ **Onze projecten**
+- 📞 **Contact met ons team**
+
+Wat wilt u verkennen?`,
     },
     leadPrompt: 'Laat uw gegevens achter en wij nemen contact op',
     leadName: 'Uw naam',
@@ -128,17 +188,47 @@ export const I18N = {
       { id: 'contact', icon: '📞', text: 'Kontakt i razgledavanje' },
     ],
     answers: {
-      sales:
-        'Trenutno nudimo ekskluzivne apartmane na prodaju u Marini, Dalmacija (30 min. od Splita) — uključujući Skyline Penthouse Marina, moderan jednosobni apartman i nekoliko rezidencija s pogledom na more, privatnim parkingom i spremištem. Želite li detalje o određenoj nekretnini ili da dogovorim razgledavanje?',
-      rentals:
-        'Naša ponuda za najam je u pripremi i uskoro će biti dostupna. Recite mi što tražite (datumi, veličina, budžet) i zabilježit ću vaš interes; naš tim će vas kontaktirati čim oglasi budu objavljeni.',
-      projects:
-        'Naši prepoznatljivi projekti na dalmatinskoj obali su Marina Residence (apartmani s pogledom na more), Villa Marina (dvoetažna vila s privatnim bazenom) i Villa Bellamar (moderna vila na obronku). O kojem projektu želite saznati više?',
-      contact:
-        'Bellamar u Splitu, Hrvatska možete kontaktirati na +385 95 374 4906 ili executive@bellamarinvest.com. Podijelite svoje ime, e-mail i interes te će vas naš tim ubrzo kontaktirati.',
-      lead: 'Rado ću vas povezati s našim timom. Možete li podijeliti svoje ime, e-mail i interes?',
-      fallback:
-        'Hvala na poruci! Mogu pomoći s nekretninama na prodaju, najmom, našim projektima ili povezivanjem s našim timom u Splitu. Što želite istražiti?',
+      sales: `**Nekretnine na prodaju** 🏠
+
+Ekskluzivni apartmani u **Marini, Dalmacija** _(30 min od Splita)_:
+
+- **Skyline Penthouse Marina** — dvoetažni · 4 spavaće · pogled na more
+- **Moderan jednosobni apartman** — najbolja cijena · useljiv
+- **Rezidencije s pogledom na more** — privatni parking i spremište
+
+Želite detalje o nekretnini ili da dogovorim **razgledavanje**?`,
+      rentals: `**Najam** 🔑
+
+Naša ponuda za najam **uskoro** stiže.
+
+Recite mi što tražite — datumi, veličina, budžet — i zabilježit ću vaš interes. Naš tim javit će se čim oglasi budu objavljeni.`,
+      projects: `**Naši projekti** 🏗️
+
+Na dalmatinskoj obali:
+
+- **Marina Residence** — apartmani s pogledom na more
+- **Villa Marina** — dvoetažna vila s privatnim bazenom
+- **Villa Bellamar** — moderna vila na obronku
+
+Koji projekt želite istražiti?`,
+      contact: `**Kontakt Bellamar** 📞
+
+- 📍 Split, Hrvatska
+- 📱 +385 95 374 4906
+- ✉️ executive@bellamarinvest.com
+
+Ostavite svoje **ime i e-mail** ispod i naš tim će vam se ubrzo javiti.`,
+      lead: `Rado ću vas povezati s našim timom.
+
+Podijelite svoje **ime**, **e-mail** i što vas zanima.`,
+      fallback: `Mogu vam pomoći s:
+
+- 🏠 **Nekretnine na prodaju**
+- 🔑 **Najam**
+- 🏗️ **Naši projekti**
+- 📞 **Kontakt s našim timom**
+
+Što želite istražiti?`,
     },
     leadPrompt: 'Ostavite svoje podatke i javit ćemo vam se',
     leadName: 'Vaše ime',
@@ -169,17 +259,47 @@ export const I18N = {
       { id: 'contact', icon: '📞', text: 'Kontakt i oglądanie' },
     ],
     answers: {
-      sales:
-        'Obecnie oferujemy ekskluzywne apartamenty na sprzedaż w Marinie, Dalmacja (30 min od Splitu) — w tym Skyline Penthouse Marina, nowoczesny apartament z jedną sypialnią oraz kilka rezydencji z widokiem na morze, prywatnym parkingiem i schowkiem. Chcesz poznać szczegóły konkretnej nieruchomości, czy mam umówić oglądanie?',
-      rentals:
-        'Nasza oferta wynajmu jest przygotowywana i wkrótce będzie dostępna. Powiedz mi, czego szukasz (terminy, wielkość, budżet), a zanotuję Twoje zainteresowanie; nasz zespół skontaktuje się, gdy tylko oferty będą dostępne.',
-      projects:
-        'Nasze flagowe projekty na wybrzeżu Dalmacji to Marina Residence (apartamenty z widokiem na morze), Villa Marina (dwupoziomowa willa z prywatnym basenem) i Villa Bellamar (nowoczesna willa na wzgórzu). O którym projekcie chcesz dowiedzieć się więcej?',
-      contact:
-        'Z Bellamar w Splicie (Chorwacja) skontaktujesz się pod numerem +385 95 374 4906 lub executive@bellamarinvest.com. Podaj imię, e-mail i swoje zainteresowanie, a nasz zespół wkrótce się odezwie.',
-      lead: 'Chętnie połączę Cię z naszym zespołem. Czy możesz podać imię, e-mail i swoje zainteresowanie?',
-      fallback:
-        'Dziękujemy za wiadomość! Pomogę w sprawie nieruchomości na sprzedaż, wynajmu, naszych projektów lub kontaktu z naszym zespołem w Splicie. Co chcesz sprawdzić?',
+      sales: `**Nieruchomości na sprzedaż** 🏠
+
+Ekskluzywne apartamenty w **Marinie, Dalmacja** _(30 min od Splitu)_:
+
+- **Skyline Penthouse Marina** — dwupoziomowy · 4 sypialnie · widok na morze
+- **Nowoczesny apartament z 1 sypialnią** — najlepsza cena · gotowy do wprowadzenia
+- **Rezydencje z widokiem na morze** — prywatny parking i schowek
+
+Chcesz szczegóły konkretnej nieruchomości, czy mam umówić **oglądanie**?`,
+      rentals: `**Wynajem** 🔑
+
+Nasza oferta wynajmu będzie dostępna **wkrótce**.
+
+Powiedz mi, czego szukasz — terminy, wielkość, budżet — a zanotuję Twoje zainteresowanie. Nasz zespół odezwie się, gdy oferty będą dostępne.`,
+      projects: `**Nasze projekty** 🏗️
+
+Na wybrzeżu Dalmacji:
+
+- **Marina Residence** — apartamenty z widokiem na morze
+- **Villa Marina** — dwupoziomowa willa z prywatnym basenem
+- **Villa Bellamar** — nowoczesna willa na wzgórzu
+
+Który projekt chcesz poznać?`,
+      contact: `**Kontakt Bellamar** 📞
+
+- 📍 Split, Chorwacja
+- 📱 +385 95 374 4906
+- ✉️ executive@bellamarinvest.com
+
+Zostaw poniżej swoje **imię i e-mail**, a nasz zespół wkrótce się odezwie.`,
+      lead: `Chętnie połączę Cię z naszym zespołem.
+
+Podaj swoje **imię**, **e-mail** i czym jesteś zainteresowany.`,
+      fallback: `Mogę pomóc Ci w zakresie:
+
+- 🏠 **Nieruchomości na sprzedaż**
+- 🔑 **Wynajem**
+- 🏗️ **Nasze projekty**
+- 📞 **Kontakt z naszym zespołem**
+
+Co chcesz sprawdzić?`,
     },
     leadPrompt: 'Zostaw swoje dane, a my się odezwiemy',
     leadName: 'Twoje imię',

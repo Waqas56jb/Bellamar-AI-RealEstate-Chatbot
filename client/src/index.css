@@ -52,6 +52,17 @@ body {
 }
 .cw-mount { width: var(--panel-w); max-width: 100%; }
 
+/* ---- Embed mode (inside the host-page iframe) ------------------------- */
+body.embed { background: transparent; }
+.cw-panel--embed {
+  width: 100%;
+  height: 100vh;
+  max-width: 100%;
+  border-radius: 0;          /* the iframe itself carries the radius + shadow */
+  box-shadow: none;
+  animation: none;
+}
+
 /* ---- Launcher bubble (collapsed state) -------------------------------- */
 .cw-launcher {
   position: fixed;
@@ -366,6 +377,42 @@ body {
   background: linear-gradient(135deg, var(--sea-800), var(--sea-600));
   color: #fff;
   border-bottom-right-radius: 6px;
+}
+
+/* markdown content inside bot bubbles */
+.md { font-size: 14px; line-height: 1.55; }
+.md > :first-child { margin-top: 0; }
+.md > :last-child { margin-bottom: 0; }
+.md p { margin: 0 0 8px; }
+.md strong { font-weight: 700; color: var(--sea-900); }
+.md em { font-style: italic; }
+.md h1, .md h2, .md h3, .md h4 {
+  font-family: var(--serif);
+  color: var(--sea-900);
+  margin: 10px 0 6px;
+  line-height: 1.2;
+}
+.md h1 { font-size: 18px; }
+.md h2 { font-size: 17px; }
+.md h3, .md h4 { font-size: 15.5px; }
+.md ul, .md ol { margin: 6px 0 10px; padding-left: 18px; }
+.md li { margin: 3px 0; }
+.md ul li::marker { color: var(--gold); }
+.md a { color: var(--sea-700); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+.md a:hover { color: var(--gold); }
+.md code {
+  background: var(--cream-2);
+  padding: 1px 5px;
+  border-radius: 5px;
+  font-size: 12.5px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.md hr { border: none; border-top: 1px solid rgba(31, 90, 112, 0.15); margin: 10px 0; }
+.md blockquote {
+  margin: 8px 0;
+  padding: 4px 12px;
+  border-left: 3px solid var(--gold);
+  color: var(--ink-soft);
 }
 
 /* typing dots */
