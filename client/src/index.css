@@ -1,0 +1,451 @@
+/* =========================================================================
+   Bellamar Housing — AI chatbot widget
+   Layout mirrors the reference design (welcome → start → chat + quick replies),
+   restyled for a premium Croatian / Adriatic real-estate brand:
+   deep sea-navy + gold accents on a warm cream canvas.
+   ========================================================================= */
+
+:root {
+  --sea-900: #0c2733;
+  --sea-800: #103443;
+  --sea-700: #17475a;
+  --sea-600: #1f5a70;
+  --gold: #c9a45f;
+  --gold-soft: #d8bd86;
+  --cream: #f7f3ec;
+  --cream-2: #efe8db;
+  --ink: #20303a;
+  --ink-soft: #5d6b73;
+  --white: #ffffff;
+  --online: #34c759;
+
+  --serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  --panel-w: 384px;
+  --panel-h: 624px;
+  --radius: 22px;
+  --shadow: 0 24px 60px rgba(8, 24, 32, 0.45);
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root { height: 100%; margin: 0; }
+
+body {
+  font-family: var(--sans);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- Demo stage (host page stand-in) ---------------------------------- */
+.stage {
+  min-height: 100%;
+  background:
+    radial-gradient(1200px 600px at 70% -10%, #16323f 0%, transparent 60%),
+    #050a0d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.cw-mount { width: var(--panel-w); max-width: 100%; }
+
+/* ---- Launcher bubble (collapsed state) -------------------------------- */
+.cw-launcher {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--sea-800), var(--sea-600));
+  color: var(--white);
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform 0.15s ease;
+}
+.cw-launcher:hover { transform: translateY(-2px); }
+.cw-launcher__icon { font-size: 18px; }
+
+/* ---- Panel ------------------------------------------------------------- */
+.cw-panel {
+  width: var(--panel-w);
+  max-width: 100%;
+  height: var(--panel-h);
+  display: flex;
+  flex-direction: column;
+  background: var(--cream);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  animation: panel-in 0.28s ease;
+}
+@keyframes panel-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ---- Header ------------------------------------------------------------ */
+.cw-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 16px 18px;
+  background: linear-gradient(135deg, var(--sea-900) 0%, var(--sea-700) 100%);
+  color: var(--white);
+}
+.cw-header__brand { display: flex; align-items: center; gap: 12px; }
+.cw-logo {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--sea-900);
+  border: 2px solid var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--gold);
+}
+.cw-logo__status {
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--online);
+  border: 2px solid var(--sea-900);
+}
+.cw-header__name {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+.cw-header__role {
+  margin: 2px 0 0;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.status-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--online);
+  display: inline-block;
+}
+.cw-header__actions { display: flex; align-items: center; gap: 10px; }
+
+.lang-switch {
+  display: flex;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  padding: 2px;
+}
+.lang-switch__btn {
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 4px 8px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.lang-switch__btn:hover { color: #fff; }
+.lang-switch__btn.is-active { background: var(--gold); color: var(--sea-900); }
+
+.cw-close {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.cw-close:hover { background: rgba(255, 255, 255, 0.26); }
+
+/* ---- Body -------------------------------------------------------------- */
+.cw-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background:
+    linear-gradient(180deg, var(--cream) 0%, var(--cream-2) 100%);
+}
+
+/* ---- Welcome view ------------------------------------------------------ */
+.welcome {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 28px 30px;
+}
+.welcome__logo-ring {
+  width: 92px; height: 92px;
+  border-radius: 50%;
+  border: 1px dashed rgba(201, 164, 95, 0.6);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 22px;
+}
+.welcome__logo {
+  width: 66px; height: 66px;
+  border-radius: 50%;
+  background: var(--sea-900);
+  color: var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif);
+  font-size: 30px;
+  font-weight: 700;
+}
+.welcome__title {
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0 0 10px;
+  color: var(--sea-900);
+}
+.welcome__subtitle {
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  margin: 0 0 26px;
+  max-width: 280px;
+}
+.welcome__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 34px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--sea-900), var(--sea-700));
+  color: #fff;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 14px 28px rgba(12, 39, 51, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.welcome__cta:hover { transform: translateY(-2px); box-shadow: 0 18px 34px rgba(12, 39, 51, 0.42); }
+.welcome__cta-icon { color: var(--gold-soft); font-size: 14px; }
+
+/* ---- Chat view --------------------------------------------------------- */
+.chat { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.chat__messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 16px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.chat__messages::-webkit-scrollbar { width: 6px; }
+.chat__messages::-webkit-scrollbar-thumb { background: rgba(31, 90, 112, 0.25); border-radius: 99px; }
+
+.msg-row { display: flex; align-items: flex-end; gap: 8px; }
+.msg-row--bot { justify-content: flex-start; }
+.msg-row--user { justify-content: flex-end; }
+
+.msg-avatar {
+  flex: 0 0 auto;
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: var(--sea-900);
+  color: var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 14px;
+  border: 1.5px solid var(--gold);
+}
+.msg-bubble {
+  max-width: 78%;
+  padding: 12px 15px;
+  font-size: 14px;
+  line-height: 1.5;
+  border-radius: 18px;
+  animation: msg-in 0.22s ease;
+}
+@keyframes msg-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.msg-bubble--bot {
+  background: var(--white);
+  color: var(--ink);
+  border-bottom-left-radius: 6px;
+  box-shadow: 0 4px 14px rgba(12, 39, 51, 0.06);
+}
+.msg-bubble--user {
+  background: linear-gradient(135deg, var(--sea-800), var(--sea-600));
+  color: #fff;
+  border-bottom-right-radius: 6px;
+}
+
+/* typing dots */
+.msg-bubble.typing { display: inline-flex; gap: 5px; align-items: center; padding: 14px 16px; }
+.typing .dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--sea-600);
+  opacity: 0.5;
+  animation: blink 1.2s infinite ease-in-out;
+}
+.typing .dot:nth-child(2) { animation-delay: 0.2s; }
+.typing .dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes blink { 0%, 80%, 100% { opacity: 0.3; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-3px); } }
+
+/* ---- Quick replies ----------------------------------------------------- */
+.quick-replies { display: flex; flex-direction: column; gap: 10px; padding-left: 38px; }
+.quick-reply {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  padding: 14px 16px;
+  background: var(--white);
+  border: 1px solid rgba(31, 90, 112, 0.12);
+  border-radius: 14px;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(12, 39, 51, 0.05);
+  transition: transform 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+}
+.quick-reply:hover {
+  transform: translateY(-1px);
+  border-color: var(--gold);
+  box-shadow: 0 6px 16px rgba(12, 39, 51, 0.1);
+}
+.quick-reply__icon { font-size: 18px; }
+
+/* ---- Lead form --------------------------------------------------------- */
+.lead-form {
+  margin-left: 38px;
+  background: var(--white);
+  border: 1px solid rgba(31, 90, 112, 0.12);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 4px 14px rgba(12, 39, 51, 0.06);
+}
+.lead-form__title { margin: 0 0 2px; font-size: 13px; font-weight: 600; color: var(--sea-900); }
+.lead-form__input {
+  padding: 11px 13px;
+  border: 1px solid rgba(31, 90, 112, 0.18);
+  border-radius: 10px;
+  font-family: var(--sans);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+.lead-form__input:focus { border-color: var(--gold); }
+.lead-form__submit {
+  margin-top: 2px;
+  padding: 11px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--sea-900), var(--sea-700));
+  color: #fff;
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+.lead-form__submit:hover { filter: brightness(1.08); }
+.lead-thanks {
+  margin-left: 38px;
+  background: rgba(52, 199, 89, 0.1);
+  border: 1px solid rgba(52, 199, 89, 0.35);
+  color: #1c7a3c;
+  border-radius: 14px;
+  padding: 13px 16px;
+  font-size: 14px;
+}
+
+/* ---- Input row --------------------------------------------------------- */
+.chat__input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px 14px;
+  background: var(--cream-2);
+  border-top: 1px solid rgba(31, 90, 112, 0.08);
+}
+.chat__input {
+  flex: 1;
+  padding: 13px 18px;
+  border: 1px solid rgba(31, 90, 112, 0.16);
+  border-radius: 999px;
+  background: #fff;
+  font-family: var(--sans);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+.chat__input:focus { border-color: var(--gold); }
+.chat__send {
+  flex: 0 0 auto;
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, var(--gold), var(--gold-soft));
+  color: var(--sea-900);
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.12s ease;
+}
+.chat__send:hover { transform: scale(1.06); }
+
+/* ---- Footer ------------------------------------------------------------ */
+.cw-footer {
+  text-align: center;
+  padding: 10px;
+  font-size: 11px;
+  color: var(--ink-soft);
+  background: var(--cream-2);
+  letter-spacing: 0.02em;
+}
+
+/* ---- Mobile responsive ------------------------------------------------- */
+@media (max-width: 480px) {
+  :root { --panel-w: 100%; --panel-h: 100%; --radius: 0px; }
+  .stage { padding: 0; }
+  .cw-mount { width: 100%; height: 100%; }
+  .cw-panel { height: 100vh; }
+}
