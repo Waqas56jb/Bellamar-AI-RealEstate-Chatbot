@@ -1,45 +1,75 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Header from './Header'
 import WelcomeScreen from './WelcomeScreen'
 import ChatScreen from './ChatScreen'
 import { I18N, resolveAnswerKey } from '../data/content'
+import { api } from '../api'
 
 let msgId = 0
 const nextId = () => `m${++msgId}`
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const fill = (tpl, vars) => String(tpl).replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? '')
 
-// Top-level chat widget. Holds conversation state and a small conversational
-// lead-capture flow (asks name → email → interest one question at a time,
-// instead of an input form).
-//
-// NOTE: bot replies + lead capture are mocked locally so the frontend is fully
-// demonstrable. Swap `botReply` for POST /api/chat and `submitLead` for
-// POST /api/leads when the backend is connected.
+// Top-level chat widget. Talks to the live backend:
+//   • general questions  -> POST /api/chat   (OpenAI, trained on Bellamar)
+//   • lead capture        -> conversational flow -> POST /api/leads (Supabase)
+//   • welcome/on-off      -> GET /api/settings
 export default function ChatWidget({ embedded = false, onRequestClose }) {
   const [isOpen, setIsOpen] = useState(true)
   const [started, setStarted] = useState(false)
   const [lang, setLang] = useState('en')
   const [messages, setMessages] = useState([])
   const [isTyping, setIsTyping] = useState(false)
+  const [settings, setSettings] = useState(null)
+  const [conversationId, setConversationId] = useState(null)
 
-  // Lead capture state: which question we're on + answers gathered so far.
+  // Conversational lead capture state.
   const [leadStep, setLeadStep] = useState(null) // 'name' | 'email' | 'interest'
   const [lead, setLead] = useState({ name: '', email: '', interest: '' })
 
   const t = useMemo(() => I18N[lang], [lang])
 
+  // Load widget settings (welcome message, on/off) once.
+  useEffect(() => {
+    api.getSettings().then(setSettings).catch(() => {})
+  }, [])
+
   const pushUser = (text) => setMessages((p) => [...p, { id: nextId(), type: 'text', from: 'user', text }])
   const pushBot = (text) => setMessages((p) => [...p, { id: nextId(), type: 'text', from: 'bot', text }])
 
-  // Bot "types" for a beat, then says something (optionally chaining an action).
-  const sayBot = (text, after) => {
+  // Local "bot says" used for the deterministic lead-capture questions.
+  const sayBot = (text) => {
     setIsTyping(true)
     setTimeout(() => {
       setIsTyping(false)
       pushBot(text)
-      if (after) after()
-    }, 650)
+    }, 600)
+  }
+
+  const greetingText = (code) => settings?.welcome?.[code] || I18N[code].greeting
+
+  // Build OpenAI-style history from the visible conversation (+ the new turn).
+  const historyFrom = (msgs, extraUserText) => {
+    const h = msgs
+      .filter((m) => m.type === 'text')
+      .map((m) => ({ role: m.from === 'bot' ? 'assistant' : 'user', content: m.text }))
+    if (extraUserText) h.push({ role: 'user', content: extraUserText })
+    return h
+  }
+
+  // ----- Real AI reply -----------------------------------------------------
+  const sendToAI = async (userText) => {
+    const history = historyFrom(messages, userText)
+    setIsTyping(true)
+    try {
+      const data = await api.chat({ messages: history, language: lang, conversationId })
+      setIsTyping(false)
+      if (data.conversationId) setConversationId(data.conversationId)
+      pushBot(data.disabled ? data.reply || t.offlineMessage : data.reply || t.answers.fallback)
+    } catch (e) {
+      setIsTyping(false)
+      pushBot(t.errorMessage)
+    }
   }
 
   // ----- Conversational lead capture --------------------------------------
@@ -59,7 +89,7 @@ export default function ChatWidget({ embedded = false, onRequestClose }) {
       sayBot(fill(t.leadFlow.askEmail, { name: value }))
     } else if (leadStep === 'email') {
       if (!EMAIL_RE.test(value)) {
-        sayBot(t.leadFlow.emailInvalid) // re-ask, stay on email step
+        sayBot(t.leadFlow.emailInvalid) // re-ask, stay on this step
         return
       }
       setLead((l) => ({ ...l, email: value }))
@@ -68,41 +98,30 @@ export default function ChatWidget({ embedded = false, onRequestClose }) {
     } else if (leadStep === 'interest') {
       const finalLead = { ...lead, interest: value, language: lang }
       setLeadStep(null)
-      submitLead(finalLead)
+      // Persist to the backend (Supabase). UX continues regardless of result.
+      api.sendLead(finalLead).catch((err) => console.warn('[Bellamar] lead save failed:', err?.message))
       sayBot(fill(t.leadFlow.done, finalLead))
     }
   }
 
-  const submitLead = (data) => {
-    // Frontend mock — replace with POST /api/leads when the backend is wired.
-    // eslint-disable-next-line no-console
-    console.log('[Bellamar] lead captured:', data)
-  }
-
-  // ----- Normal chat -------------------------------------------------------
-  const botReply = (key) => {
-    if (key === 'lead') {
-      startLeadFlow()
-      return
-    }
-    sayBot(t.answers[key] || t.answers.fallback, () => {
-      // After contact/rentals info, smoothly move into capturing details.
-      if (key === 'contact' || key === 'rentals') setTimeout(startLeadFlow, 550)
-    })
-  }
-
+  // ----- Routing -----------------------------------------------------------
   const startConversation = () => {
     setStarted(true)
+    if (settings && settings.isEnabled === false) {
+      setMessages([{ id: nextId(), type: 'text', from: 'bot', text: t.offlineMessage }])
+      return
+    }
     setMessages([
-      { id: nextId(), type: 'text', from: 'bot', text: t.greeting },
+      { id: nextId(), type: 'text', from: 'bot', text: greetingText(lang) },
       { id: nextId(), type: 'quick' },
     ])
   }
 
   const handlePickQuick = (item) => {
-    if (leadStep) setLeadStep(null) // picking a topic cancels an in-progress capture
+    if (leadStep) setLeadStep(null)
     pushUser(item.text)
-    botReply(item.id)
+    if (item.id === 'contact') startLeadFlow()
+    else sendToAI(item.text)
   }
 
   const handleSend = (text) => {
@@ -110,17 +129,19 @@ export default function ChatWidget({ embedded = false, onRequestClose }) {
       handleLeadAnswer(text)
       return
     }
+    // Strong contact/lead intent → start the structured capture flow.
+    const intent = resolveAnswerKey(text, lang)
     pushUser(text)
-    botReply(resolveAnswerKey(text, lang))
+    if (intent === 'lead' || intent === 'contact') startLeadFlow()
+    else sendToAI(text)
   }
 
-  // Re-greet in the newly selected language; cancel any capture in progress.
   const changeLang = (code) => {
     setLang(code)
     setLeadStep(null)
     if (started) {
       setMessages([
-        { id: nextId(), type: 'text', from: 'bot', text: I18N[code].greeting },
+        { id: nextId(), type: 'text', from: 'bot', text: greetingText(code) },
         { id: nextId(), type: 'quick' },
       ])
     }

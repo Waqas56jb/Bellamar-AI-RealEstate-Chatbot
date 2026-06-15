@@ -1,5 +1,6 @@
 // Thin API client for the admin panel -> backend (server/).
-const BASE = (import.meta.env.VITE_API_URL || 'http://localhost:3001').replace(/\/$/, '')
+// Defaults to the deployed backend; override with VITE_API_URL for local dev.
+const BASE = (import.meta.env.VITE_API_URL || 'https://bellamar-ai-real-estate-chatbot-bac.vercel.app').replace(/\/$/, '')
 const TOKEN_KEY = 'bellamar_admin_token'
 
 export const tokenStore = {
