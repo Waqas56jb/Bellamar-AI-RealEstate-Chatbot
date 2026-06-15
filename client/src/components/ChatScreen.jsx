@@ -2,11 +2,11 @@ import { useEffect, useRef, useState } from 'react'
 import MessageBubble from './MessageBubble'
 import TypingIndicator from './TypingIndicator'
 import QuickReplies from './QuickReplies'
-import LeadForm from './LeadForm'
 
-// Conversation view: scrollable message list (with quick replies / lead form
-// rendered inline as special message types) and the input row.
-export default function ChatScreen({ t, messages, isTyping, onPickQuick, onSend, onLead }) {
+// Conversation view: scrollable message list (with quick replies rendered
+// inline as a special message type) and the input row. Lead details are
+// collected conversationally by the bot, so there is no inline form here.
+export default function ChatScreen({ t, messages, isTyping, onPickQuick, onSend }) {
   const [draft, setDraft] = useState('')
   const scrollRef = useRef(null)
 
@@ -30,9 +30,6 @@ export default function ChatScreen({ t, messages, isTyping, onPickQuick, onSend,
         {messages.map((m) => {
           if (m.type === 'quick') {
             return <QuickReplies key={m.id} items={t.quickReplies} onPick={onPickQuick} />
-          }
-          if (m.type === 'lead') {
-            return <LeadForm key={m.id} t={t} onSubmit={onLead} />
           }
           return <MessageBubble key={m.id} from={m.from} text={m.text} />
         })}

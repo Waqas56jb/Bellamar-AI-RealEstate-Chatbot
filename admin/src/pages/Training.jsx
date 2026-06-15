@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Plus, Pencil, Trash2, Power, BrainCircuit, X } from 'lucide-react'
 import { api } from '../api'
 
 const LANGS = ['all', 'en', 'nl', 'hr', 'pl']
@@ -23,11 +24,8 @@ export default function Training() {
     setError('')
     setSaving(true)
     try {
-      if (editingId) {
-        await api.updateTraining(editingId, form)
-      } else {
-        await api.createTraining(form)
-      }
+      if (editingId) await api.updateTraining(editingId, form)
+      else await api.createTraining(form)
       reset()
       load()
     } catch (err) {
@@ -40,12 +38,10 @@ export default function Training() {
   const edit = (d) => {
     setEditingId(d.id)
     setForm({ title: d.title, content: d.content, language: d.language, is_active: d.is_active })
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  const toggle = async (d) => {
-    await api.updateTraining(d.id, { is_active: !d.is_active })
-    load()
-  }
+  const toggle = async (d) => { await api.updateTraining(d.id, { is_active: !d.is_active }); load() }
 
   const remove = async (id) => {
     if (!confirm('Delete this document?')) return
@@ -55,16 +51,27 @@ export default function Training() {
 
   return (
     <div>
-      <h1 className="page-title">Training</h1>
-      <p className="page-sub">Knowledge the chatbot uses to answer. Added live to the AI.</p>
+      <div className="page-head">
+        <div>
+          <h1 className="page-title">Training</h1>
+          <p className="page-sub">Knowledge the chatbot uses to answer — applied to the AI live.</p>
+        </div>
+      </div>
 
       {error && <div className="alert alert--error">{error}</div>}
 
       <form className="panel form" onSubmit={save}>
-        <h3 className="panel__title">{editingId ? 'Edit document' : 'Add document'}</h3>
+        <div className="panel__head">
+          <h3 className="panel__title">
+            {editingId ? <><Pencil size={17} /> Edit document</> : <><Plus size={17} /> Add document</>}
+          </h3>
+          {editingId && (
+            <button type="button" className="icon-btn" onClick={reset} title="Cancel edit"><X size={18} /></button>
+          )}
+        </div>
         <input
           className="field"
-          placeholder="Title (e.g. Pricing policy)"
+          placeholder="Title (e.g. Pricing policy, Office hours)"
           value={form.title}
           onChange={(e) => setForm({ ...form, title: e.target.value })}
           required
@@ -80,46 +87,47 @@ export default function Training() {
         <div className="form__row">
           <label className="form__label">
             Language
-            <select
-              className="field"
-              value={form.language}
-              onChange={(e) => setForm({ ...form, language: e.target.value })}
-            >
+            <select className="field" value={form.language} onChange={(e) => setForm({ ...form, language: e.target.value })}>
               {LANGS.map((l) => <option key={l} value={l}>{l.toUpperCase()}</option>)}
             </select>
           </label>
           <label className="check">
-            <input
-              type="checkbox"
-              checked={form.is_active}
-              onChange={(e) => setForm({ ...form, is_active: e.target.checked })}
-            />
+            <input type="checkbox" checked={form.is_active} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} />
             Active
           </label>
           <div className="form__actions">
-            {editingId && <button type="button" className="btn btn--ghost" onClick={reset}>Cancel</button>}
-            <button className="btn" type="submit" disabled={saving}>
-              {saving ? 'Saving…' : editingId ? 'Update' : 'Add'}
+            <button className="btn btn--icon" type="submit" disabled={saving}>
+              {saving ? 'Saving…' : editingId ? 'Update' : <><Plus size={16} /> Add</>}
             </button>
           </div>
         </div>
       </form>
 
       <div className="doc-list">
-        {docs.length === 0 && <p className="page-sub">No training documents yet.</p>}
+        {docs.length === 0 && (
+          <div className="empty-state">
+            <BrainCircuit size={30} />
+            <p>No training documents yet. Add one above to teach the chatbot.</p>
+          </div>
+        )}
         {docs.map((d) => (
           <div className={`doc ${d.is_active ? '' : 'doc--off'}`} key={d.id}>
             <div className="doc__head">
               <strong>{d.title}</strong>
               <span className="pill">{d.language.toUpperCase()}</span>
+              <span className={`dot ${d.is_active ? 'dot--on' : 'dot--off'}`} />
             </div>
             <p className="doc__content">{d.content}</p>
             <div className="doc__actions">
-              <button className="btn btn--ghost" onClick={() => toggle(d)}>
-                {d.is_active ? 'Disable' : 'Enable'}
+              <button className="btn btn--ghost btn--icon" onClick={() => toggle(d)}>
+                <Power size={15} /> {d.is_active ? 'Disable' : 'Enable'}
               </button>
-              <button className="btn btn--ghost" onClick={() => edit(d)}>Edit</button>
-              <button className="btn btn--danger" onClick={() => remove(d.id)}>Delete</button>
+              <button className="btn btn--ghost btn--icon" onClick={() => edit(d)}>
+                <Pencil size={15} /> Edit
+              </button>
+              <button className="btn btn--danger btn--icon" onClick={() => remove(d.id)}>
+                <Trash2 size={15} /> Delete
+              </button>
             </div>
           </div>
         ))}

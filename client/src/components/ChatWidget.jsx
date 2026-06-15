@@ -6,12 +6,16 @@ import { I18N, resolveAnswerKey } from '../data/content'
 
 let msgId = 0
 const nextId = () => `m${++msgId}`
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const fill = (tpl, vars) => String(tpl).replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? '')
 
-// Top-level chat widget: launcher bubble + sliding panel that switches between
-// the welcome view and the live conversation. Holds all conversation state.
+// Top-level chat widget. Holds conversation state and a small conversational
+// lead-capture flow (asks name → email → interest one question at a time,
+// instead of an input form).
 //
-// NOTE: bot replies are mocked locally (canned answers + simulated typing) so
-// the frontend is fully demonstrable. Swap `botReply` for a backend/AI call later.
+// NOTE: bot replies + lead capture are mocked locally so the frontend is fully
+// demonstrable. Swap `botReply` for POST /api/chat and `submitLead` for
+// POST /api/leads when the backend is connected.
 export default function ChatWidget({ embedded = false, onRequestClose }) {
   const [isOpen, setIsOpen] = useState(true)
   const [started, setStarted] = useState(false)
@@ -19,23 +23,72 @@ export default function ChatWidget({ embedded = false, onRequestClose }) {
   const [messages, setMessages] = useState([])
   const [isTyping, setIsTyping] = useState(false)
 
+  // Lead capture state: which question we're on + answers gathered so far.
+  const [leadStep, setLeadStep] = useState(null) // 'name' | 'email' | 'interest'
+  const [lead, setLead] = useState({ name: '', email: '', interest: '' })
+
   const t = useMemo(() => I18N[lang], [lang])
 
-  // Simulate a bot turn: show typing, then push the canned answer for `key`.
-  const botReply = (key) => {
+  const pushUser = (text) => setMessages((p) => [...p, { id: nextId(), type: 'text', from: 'user', text }])
+  const pushBot = (text) => setMessages((p) => [...p, { id: nextId(), type: 'text', from: 'bot', text }])
+
+  // Bot "types" for a beat, then says something (optionally chaining an action).
+  const sayBot = (text, after) => {
     setIsTyping(true)
-    const delay = 650 + Math.min(key.length, 8) * 60
     setTimeout(() => {
       setIsTyping(false)
-      setMessages((prev) => [
-        ...prev,
-        { id: nextId(), type: 'text', from: 'bot', text: t.answers[key] || t.answers.fallback },
-      ])
-      // After certain answers, offer the inline lead form.
-      if (key === 'contact' || key === 'rentals' || key === 'lead') {
-        setMessages((prev) => [...prev, { id: nextId(), type: 'lead' }])
+      pushBot(text)
+      if (after) after()
+    }, 650)
+  }
+
+  // ----- Conversational lead capture --------------------------------------
+  const startLeadFlow = () => {
+    setLead({ name: '', email: '', interest: '' })
+    setLeadStep('name')
+    sayBot(t.leadFlow.askName)
+  }
+
+  const handleLeadAnswer = (text) => {
+    pushUser(text)
+    const value = text.trim()
+
+    if (leadStep === 'name') {
+      setLead((l) => ({ ...l, name: value }))
+      setLeadStep('email')
+      sayBot(fill(t.leadFlow.askEmail, { name: value }))
+    } else if (leadStep === 'email') {
+      if (!EMAIL_RE.test(value)) {
+        sayBot(t.leadFlow.emailInvalid) // re-ask, stay on email step
+        return
       }
-    }, delay)
+      setLead((l) => ({ ...l, email: value }))
+      setLeadStep('interest')
+      sayBot(t.leadFlow.askInterest)
+    } else if (leadStep === 'interest') {
+      const finalLead = { ...lead, interest: value, language: lang }
+      setLeadStep(null)
+      submitLead(finalLead)
+      sayBot(fill(t.leadFlow.done, finalLead))
+    }
+  }
+
+  const submitLead = (data) => {
+    // Frontend mock — replace with POST /api/leads when the backend is wired.
+    // eslint-disable-next-line no-console
+    console.log('[Bellamar] lead captured:', data)
+  }
+
+  // ----- Normal chat -------------------------------------------------------
+  const botReply = (key) => {
+    if (key === 'lead') {
+      startLeadFlow()
+      return
+    }
+    sayBot(t.answers[key] || t.answers.fallback, () => {
+      // After contact/rentals info, smoothly move into capturing details.
+      if (key === 'contact' || key === 'rentals') setTimeout(startLeadFlow, 550)
+    })
   }
 
   const startConversation = () => {
@@ -47,24 +100,24 @@ export default function ChatWidget({ embedded = false, onRequestClose }) {
   }
 
   const handlePickQuick = (item) => {
-    setMessages((prev) => [...prev, { id: nextId(), type: 'text', from: 'user', text: item.text }])
+    if (leadStep) setLeadStep(null) // picking a topic cancels an in-progress capture
+    pushUser(item.text)
     botReply(item.id)
   }
 
   const handleSend = (text) => {
-    setMessages((prev) => [...prev, { id: nextId(), type: 'text', from: 'user', text }])
+    if (leadStep) {
+      handleLeadAnswer(text)
+      return
+    }
+    pushUser(text)
     botReply(resolveAnswerKey(text, lang))
   }
 
-  const handleLead = (lead) => {
-    // Frontend only for now — log it; backend persistence comes later.
-    // eslint-disable-next-line no-console
-    console.log('[Bellamar] lead captured:', lead)
-  }
-
-  // Re-greet in the newly selected language if the chat is already open.
+  // Re-greet in the newly selected language; cancel any capture in progress.
   const changeLang = (code) => {
     setLang(code)
+    setLeadStep(null)
     if (started) {
       setMessages([
         { id: nextId(), type: 'text', from: 'bot', text: I18N[code].greeting },
@@ -73,14 +126,11 @@ export default function ChatWidget({ embedded = false, onRequestClose }) {
     }
   }
 
-  // Closing: embedded mode tells the host page to hide the iframe; standalone
-  // mode just collapses back to the launcher bubble.
   const handleClose = () => {
     if (embedded) onRequestClose?.()
     else setIsOpen(false)
   }
 
-  // In embedded mode the host page draws the launcher, so the panel is always shown.
   if (!embedded && !isOpen) {
     return (
       <button
@@ -109,7 +159,6 @@ export default function ChatWidget({ embedded = false, onRequestClose }) {
             isTyping={isTyping}
             onPickQuick={handlePickQuick}
             onSend={handleSend}
-            onLead={handleLead}
           />
         )}
       </div>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Power, Palette, Languages, MessageSquareText, Save, Check } from 'lucide-react'
 import { api } from '../api'
 
 const THEMES = [
@@ -47,49 +48,70 @@ export default function Settings() {
     }
   }
 
-  if (!s) return <div><h1 className="page-title">Settings</h1><p className="page-sub">Loading…</p>{error && <div className="alert alert--error">{error}</div>}</div>
+  if (!s) {
+    return (
+      <div>
+        <h1 className="page-title">Settings</h1>
+        <p className="page-sub">Loading…</p>
+        {error && <div className="alert alert--error">{error}</div>}
+      </div>
+    )
+  }
 
   return (
     <div>
-      <h1 className="page-title">Settings</h1>
-      <p className="page-sub">Control how the chatbot looks and behaves.</p>
+      <div className="page-head">
+        <div>
+          <h1 className="page-title">Settings</h1>
+          <p className="page-sub">Control how the chatbot looks and behaves.</p>
+        </div>
+        <button className="btn btn--icon" onClick={save} disabled={saving}>
+          {saved ? <><Check size={16} /> Saved</> : <><Save size={16} /> {saving ? 'Saving…' : 'Save changes'}</>}
+        </button>
+      </div>
 
       {error && <div className="alert alert--error">{error}</div>}
-      {saved && <div className="alert alert--ok">Saved ✓</div>}
 
       <div className="panel">
         <div className="setting-row">
-          <div>
-            <strong>Chatbot enabled</strong>
-            <p className="page-sub">Turn the assistant on or off on the website.</p>
+          <div className="setting-row__label">
+            <span className="setting-row__icon"><Power size={18} /></span>
+            <div>
+              <strong>Chatbot enabled</strong>
+              <p className="page-sub" style={{ margin: 0 }}>Turn the assistant on or off across the website.</p>
+            </div>
           </div>
           <label className="switch">
-            <input
-              type="checkbox"
-              checked={s.is_enabled}
-              onChange={(e) => set({ is_enabled: e.target.checked })}
-            />
+            <input type="checkbox" checked={s.is_enabled} onChange={(e) => set({ is_enabled: e.target.checked })} />
             <span className="switch__slider" />
           </label>
         </div>
 
         <div className="setting-row">
-          <div><strong>Theme</strong></div>
-          <select className="field" value={s.theme} onChange={(e) => set({ theme: e.target.value })}>
+          <div className="setting-row__label">
+            <span className="setting-row__icon"><Palette size={18} /></span>
+            <strong>Theme</strong>
+          </div>
+          <select className="field field--auto" value={s.theme} onChange={(e) => set({ theme: e.target.value })}>
             {THEMES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
           </select>
         </div>
 
         <div className="setting-row">
-          <div><strong>Default language</strong></div>
-          <select className="field" value={s.primary_language} onChange={(e) => set({ primary_language: e.target.value })}>
+          <div className="setting-row__label">
+            <span className="setting-row__icon"><Languages size={18} /></span>
+            <strong>Default language</strong>
+          </div>
+          <select className="field field--auto" value={s.primary_language} onChange={(e) => set({ primary_language: e.target.value })}>
             {LANGS.map((l) => <option key={l.value} value={l.value}>{l.label}</option>)}
           </select>
         </div>
       </div>
 
       <div className="panel">
-        <h3 className="panel__title">Welcome messages</h3>
+        <div className="panel__head">
+          <h3 className="panel__title"><MessageSquareText size={17} /> Welcome messages</h3>
+        </div>
         {LANGS.map((l) => (
           <label className="form__label form__label--block" key={l.value}>
             {l.label}
@@ -103,8 +125,8 @@ export default function Settings() {
         ))}
       </div>
 
-      <button className="btn btn--lg" onClick={save} disabled={saving}>
-        {saving ? 'Saving…' : 'Save changes'}
+      <button className="btn btn--lg btn--icon" onClick={save} disabled={saving}>
+        {saved ? <><Check size={18} /> Saved</> : <><Save size={18} /> {saving ? 'Saving…' : 'Save changes'}</>}
       </button>
     </div>
   )
