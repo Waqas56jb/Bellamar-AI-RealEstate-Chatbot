@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { saveLead } from '../leadsStore.js'
-import { notifyNewLead } from '../email.js'
+import { sendLeadEmails } from '../email.js'
 
 const router = Router()
 
@@ -21,8 +21,8 @@ router.post('/', async (req, res) => {
 
     const lead = await saveLead({ name, email, interest, language })
     console.log('[lead] captured:', lead.name, lead.email)
-    // Alert the Bellamar team by email (fire-and-forget — never blocks the visitor).
-    notifyNewLead(lead).catch((e) => console.warn('[lead] email notify failed:', e?.message))
+    // Email the team + send the visitor a confirmation (fire-and-forget).
+    sendLeadEmails(lead).catch((e) => console.warn('[lead] email send failed:', e?.message))
     return res.status(201).json({ ok: true, lead })
   } catch (err) {
     console.error('[leads] error:', err?.message || err)

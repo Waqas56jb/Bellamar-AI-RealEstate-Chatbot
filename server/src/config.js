@@ -13,10 +13,15 @@ export const config = {
   adminPassword: process.env.ADMIN_PASSWORD,
   adminTokenSecret: process.env.ADMIN_TOKEN_SECRET || 'dev-insecure-secret',
 
-  // Email notifications for new leads (optional — via Resend)
-  resendApiKey: process.env.RESEND_API_KEY,
-  leadNotifyTo: process.env.LEAD_NOTIFY_TO,
-  leadNotifyFrom: process.env.LEAD_NOTIFY_FROM || 'Bellamar Assistant <onboarding@resend.dev>',
+  // Email notifications for new leads (Nodemailer / SMTP — e.g. Gmail/Workspace)
+  smtpHost: process.env.SMTP_HOST || 'smtp.gmail.com',
+  smtpPort: Number(process.env.SMTP_PORT || 465),
+  smtpUser: process.env.SMTP_USER,
+  // Google shows app passwords with spaces — strip them so auth works either way.
+  smtpPass: (process.env.SMTP_PASS || '').replace(/\s+/g, ''),
+  // Where new-lead alerts go (defaults to the SMTP user / business inbox).
+  leadNotifyTo: process.env.LEAD_NOTIFY_TO || process.env.SMTP_USER,
+  brandName: 'Bellamar Housing',
 
   // Server
   port: 3001,
