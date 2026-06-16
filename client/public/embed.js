@@ -7,6 +7,7 @@
  *   data-app-url="https://your-app.vercel.app"   (defaults to the script's own origin)
  *   data-position="left"                          (defaults to "right")
  */
+
 (function () {
   'use strict'
   if (window.__bellamarWidgetLoaded) return
