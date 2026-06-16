@@ -16,7 +16,14 @@ app.use(cors({ exposedHeaders: ['X-Conversation-Id'] }))
 app.use(express.json({ limit: '1mb' }))
 
 app.get('/api/health', (_req, res) => {
-  res.json({ status: 'ok', model: config.model })
+  res.json({
+    status: 'ok',
+    model: config.model,
+    // Diagnostics (no secrets) — confirms email/DB env vars are present on the host.
+    emailConfigured: Boolean(config.smtpUser && config.smtpPass),
+    notifyTo: config.leadNotifyTo || null,
+    dbConfigured: Boolean(config.supabaseUrl && config.supabaseSecretKey),
+  })
 })
 
 // Public (chatbot widget)

@@ -53,6 +53,10 @@ function getTransporter() {
     port: config.smtpPort,
     secure: config.smtpPort === 465, // 465 = SSL, 587 = STARTTLS
     auth: { user: config.smtpUser, pass: config.smtpPass },
+    // Bound the wait so a stuck connection can't hang a serverless request.
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
   })
   return transporter
 }

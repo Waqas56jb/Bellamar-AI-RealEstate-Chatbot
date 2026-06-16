@@ -21,9 +21,19 @@ router.post('/', async (req, res) => {
 
     const lead = await saveLead({ name, email, interest, language })
     console.log('[lead] captured:', lead.name, lead.email)
-    // Email the team + send the visitor a confirmation (fire-and-forget).
-    sendLeadEmails(lead).catch((e) => console.warn('[lead] email send failed:', e?.message))
-    return res.status(201).json({ ok: true, lead })
+
+    // IMPORTANT: await the email send before responding. On serverless (Vercel)
+    // the function is frozen the instant the response is sent, which would kill
+    // a fire-and-forget email. We await it (bounded by SMTP timeouts) so both
+    // the team alert and the visitor confirmation actually go out.
+    let emailResult = { sent: false }
+    try {
+      emailResult = await sendLeadEmails(lead)
+    } catch (e) {
+      console.warn('[lead] email send failed:', e?.message)
+    }
+
+    return res.status(201).json({ ok: true, lead, emailSent: emailResult.sent })
   } catch (err) {
     console.error('[leads] error:', err?.message || err)
     return res.status(500).json({ error: 'Could not save lead.' })
